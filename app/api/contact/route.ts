@@ -1,30 +1,5 @@
 import { NextResponse } from "next/server";
 
-/**
- * Contact form endpoint.
- *
- * This currently validates input and logs the message server-side — it does
- * NOT send an email yet, because no email provider is configured in this
- * environment. Before deploying, wire this up to a real provider. Recommended
- * for a Vercel-hosted Next.js app: Resend (https://resend.com).
- *
- * Example once you have a RESEND_API_KEY set in your Vercel project's
- * environment variables:
- *
- *   import { Resend } from "resend";
- *   const resend = new Resend(process.env.RESEND_API_KEY);
- *   await resend.emails.send({
- *     from: "Portfolio <contact@yourdomain.dev>",
- *     to: profile.email,
- *     replyTo: email,
- *     subject: `New message from ${name}`,
- *     text: message,
- *   });
- *
- * Alternatives that need no server code at all: Formspree or Web3Forms —
- * point the form's `action` at their endpoint instead of /api/contact.
- */
-
 interface ContactPayload {
   name?: string;
   email?: string;
@@ -59,40 +34,61 @@ export async function POST(request: Request) {
     );
   }
 
-  // Forward to Web3Forms
   const web3formsKey = process.env.WEB3FORMS_ACCESS_KEY;
-  
-  if (web3formsKey) {
-    try {
-      const response = await fetch("https://api.web3forms.com/submit", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({
-          access_key: web3formsKey,
-          name: name,
-          email: email,
-          message: message,
-          subject: `New Portfolio Message from ${name}`,
-          from_name: "Portfolio Contact Form"
-        }),
-      });
 
-      const result = await response.json();
-      if (!result.success) {
-        throw new Error(result.message || "Failed to send email");
-      }
-    } catch (error) {
-      console.error("[contact] Email sending failed:", error);
-      return NextResponse.json(
-        { error: "Failed to send email. Please try again later." },
-        { status: 500 }
-      );
+  if (!web3formsKey) {
+    console.warn("[contact] WEB3FORMS_ACCESS_KEY is not set — email delivery skipped.");
+    // Still return success so the form UX is not broken in dev
+    return NextResponse.json({ ok: true });
+  }
+
+  let w3Response: Response;
+  try {
+    w3Response = await fetch("https://api.web3forms.com/submit", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        access_key: web3formsKey,
+        name,
+        email,
+        message,
+        subject: `New Portfolio Message from ${name}`,
+        from_name: "Portfolio Contact Form",
+      }),
+    });
+  } catch (networkErr) {
+    console.error("[contact] Network error reaching Web3Forms:", networkErr);
+    return NextResponse.json(
+      { error: "Could not reach the email service. Please try again later." },
+      { status: 502 }
+    );
+  }
+
+  // Always read as text first — Web3Forms can return HTML on certain errors
+  const rawBody = await w3Response.text();
+  console.log(`[contact] Web3Forms status=${w3Response.status} body=${rawBody.slice(0, 300)}`);
+
+  // Try to parse JSON safely
+  let result: { success?: boolean; message?: string } = {};
+  const contentType = w3Response.headers.get("content-type") ?? "";
+  if (contentType.includes("application/json")) {
+    try {
+      result = JSON.parse(rawBody);
+    } catch {
+      console.error("[contact] Failed to parse Web3Forms JSON:", rawBody.slice(0, 300));
     }
-  } else {
-    console.warn("[contact] WEB3FORMS_ACCESS_KEY is not set. Skipping email delivery.");
+  }
+
+  if (!w3Response.ok || result.success === false) {
+    const reason = result.message ?? `Web3Forms returned HTTP ${w3Response.status}`;
+    console.error("[contact] Web3Forms rejected the submission:", reason);
+    return NextResponse.json(
+      { error: `Email delivery failed: ${reason}` },
+      { status: 502 }
+    );
   }
 
   return NextResponse.json({ ok: true });
