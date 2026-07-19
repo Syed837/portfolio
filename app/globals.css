@@ -1,0 +1,167 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Dark theme (default) */
+    --background: 224 46% 4%;
+    --foreground: 210 40% 96%;
+
+    --surface: 222 39% 9%;
+    --surface-2: 222 34% 15%;
+
+    --border: 222 32% 19%;
+    --border-strong: 217 38% 28%;
+
+    --muted: 222 25% 13%;
+    --muted-foreground: 215 20% 65%;
+    --subtle: 215 16% 47%;
+
+    --accent-blue: 217 91% 60%;
+    --accent-blue-2: 213 94% 68%;
+    --accent-cyan: 189 94% 43%;
+    --accent-purple: 258 90% 66%;
+
+    --success: 160 84% 39%;
+    --destructive: 0 72% 51%;
+
+    --primary-foreground: 210 40% 98%;
+    --ring: 217 91% 60%;
+    --radius: 0.75rem;
+  }
+
+  .light {
+    --background: 210 45% 98%;
+    --foreground: 222 47% 11%;
+
+    --surface: 0 0% 100%;
+    --surface-2: 210 40% 96%;
+
+    --border: 214 32% 89%;
+    --border-strong: 213 27% 80%;
+
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 40%;
+    --subtle: 215 16% 47%;
+
+    --accent-blue: 217 91% 52%;
+    --accent-blue-2: 213 94% 58%;
+    --accent-cyan: 189 94% 36%;
+    --accent-purple: 258 80% 56%;
+
+    --success: 160 84% 32%;
+    --destructive: 0 72% 45%;
+
+    --primary-foreground: 210 40% 98%;
+    --ring: 217 91% 52%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background-color: hsl(var(--accent-blue) / 0.35);
+    color: hsl(var(--foreground));
+  }
+
+  :focus-visible {
+    outline: 2px solid hsl(var(--accent-blue));
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--background));
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--border-strong));
+    border-radius: 999px;
+    border: 2px solid hsl(var(--background));
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--subtle));
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-6xl px-5 sm:px-8 lg:px-12;
+  }
+
+  .grid-bg {
+    background-image: linear-gradient(hsl(var(--accent-blue) / 0.07) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--accent-blue) / 0.07) 1px, transparent 1px);
+    background-size: 44px 44px;
+    -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 40%, transparent 100%);
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 40%, transparent 100%);
+  }
+
+  .noise-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .glass-card {
+    @apply relative rounded-2xl border border-border bg-surface/60 backdrop-blur-xl;
+  }
+
+  .glass-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, hsl(var(--accent-blue) / 0.25), transparent 40%, hsl(var(--accent-purple) / 0.2));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  .text-gradient-brand {
+    @apply bg-gradient-brand bg-clip-text text-transparent;
+  }
+
+  .eyebrow {
+    @apply inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.18em] text-accent-cyan;
+  }
+
+  .card-hover {
+    @apply transition-all duration-300 ease-out-expo hover:-translate-y-1 hover:border-border-strong;
+  }
+
+  .skip-link {
+    @apply sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-accent-blue focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-white;
+  }
+}
