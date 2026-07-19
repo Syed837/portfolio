@@ -20,17 +20,45 @@ export function ContactForm() {
     setErrorMessage(null);
 
     const form = e.currentTarget;
-    const data = {
+    const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY;
+
+    const payload: Record<string, string> = {
       name: (form.elements.namedItem("name") as HTMLInputElement).value,
       email: (form.elements.namedItem("email") as HTMLInputElement).value,
       message: (form.elements.namedItem("message") as HTMLTextAreaElement).value,
+      subject: `New Portfolio Message from ${(form.elements.namedItem("name") as HTMLInputElement).value}`,
+      from_name: "Portfolio Contact Form",
     };
 
+    if (accessKey) {
+      // Submit directly to Web3Forms from the browser (avoids Cloudflare blocking server calls)
+      payload.access_key = accessKey;
+      try {
+        const res = await fetch("https://api.web3forms.com/submit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const result = await res.json().catch(() => ({}));
+        if (!res.ok || result.success === false) {
+          throw new Error(result.message ?? "Failed to send message. Please try again.");
+        }
+        setStatus("success");
+        form.reset();
+        return;
+      } catch (err) {
+        setStatus("error");
+        setErrorMessage(err instanceof Error ? err.message : "Something went wrong.");
+        return;
+      }
+    }
+
+    // Fallback: go through our own API route (dev mode / no key set)
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify(payload),
       });
 
       if (!res.ok) {
