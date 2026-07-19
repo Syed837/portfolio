@@ -25,8 +25,8 @@ const contactLinks = [
   {
     icon: Phone,
     label: "Phone",
-    value: profile.phones[0],
-    href: `tel:${profile.phones[0].replace(/\s+/g, "")}`,
+    value: profile.phones[0] || "",
+    href: profile.phones[0] ? `tel:${profile.phones[0].replace(/\s+/g, "")}` : null,
     external: false,
   },
   {
