@@ -59,8 +59,41 @@ export async function POST(request: Request) {
     );
   }
 
-  // TODO: replace with a real email provider call (see comment above).
-  console.log("[contact] new message", { name, email, messageLength: message.length });
+  // Forward to Web3Forms
+  const web3formsKey = process.env.WEB3FORMS_ACCESS_KEY;
+  
+  if (web3formsKey) {
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          access_key: web3formsKey,
+          name: name,
+          email: email,
+          message: message,
+          subject: `New Portfolio Message from ${name}`,
+          from_name: "Portfolio Contact Form"
+        }),
+      });
+
+      const result = await response.json();
+      if (!result.success) {
+        throw new Error(result.message || "Failed to send email");
+      }
+    } catch (error) {
+      console.error("[contact] Email sending failed:", error);
+      return NextResponse.json(
+        { error: "Failed to send email. Please try again later." },
+        { status: 500 }
+      );
+    }
+  } else {
+    console.warn("[contact] WEB3FORMS_ACCESS_KEY is not set. Skipping email delivery.");
+  }
 
   return NextResponse.json({ ok: true });
 }
