@@ -1,12 +1,10 @@
 import type { Project } from "@/types/project";
 
 /**
- * All three projects are sourced from the resume's "Training & Projects" section.
+ * All projects are sourced from the resume's "Training & Projects" section.
  * They were individual, time-boxed training projects (not production deployments) —
  * copy below is written to reflect that honestly while still explaining the real
- * engineering thinking behind each one. `year` is an approximate placeholder;
- * update once exact dates are confirmed. `githubUrl` / `demoUrl` are null until
- * repos are public — see README "Content assumptions".
+ * engineering thinking behind each one.
  */
 export const projects: Project[] = [
   {
@@ -19,7 +17,7 @@ export const projects: Project[] = [
     role: "Developer",
     teamSize: "Individual",
     environment: "Windows",
-    year: "2025",
+    year: "2026",
     overview:
       "A browser-based simulator that walks through how a Zero Trust Network Access (ZTNA) system decides whether to grant or deny access. Instead of describing Zero Trust in the abstract, the dashboard runs a request through user identity, device state, and policy checks in sequence, and shows the outcome of each step.",
     problem:
@@ -57,9 +55,9 @@ export const projects: Project[] = [
       "Add device posture checks (patch level, disk encryption) as a real signal, not a mock value",
       "Move policy definitions into a simple policy-as-code format that can be edited without touching application code",
     ],
-    githubUrl: null,
-    demoUrl: null,
-    coverImage: null,
+    githubUrl: "https://github.com/Syed837/ztna-simulator-dashboard",
+    demoUrl: "https://github.com/Syed837/ztna-simulator-dashboard",
+    coverImage: "/projects/ztna-dashboard.png",
     featured: true,
   },
   {
@@ -71,7 +69,7 @@ export const projects: Project[] = [
     role: "Developer",
     teamSize: "Individual",
     environment: "Windows",
-    year: "2025",
+    year: "2026",
     overview:
       "A dashboard that models a network's control plane — the part of a network responsible for deciding how traffic should be routed — and renders routing, signaling, and status data in one centralized interface, in place of scattered logs and CLI output.",
     problem:
@@ -109,13 +107,13 @@ export const projects: Project[] = [
       "Add historical trend charts for route stability and signaling volume over time",
       "Replace polling with WebSocket-based live updates",
     ],
-    githubUrl: null,
-    demoUrl: null,
-    coverImage: null,
+    githubUrl: "https://github.com/Syed837/network-control-plane-dashboard",
+    demoUrl: "https://github.com/Syed837/network-control-plane-dashboard",
+    coverImage: "/projects/network-control-plane.png",
     featured: true,
   },
   {
-    slug: "3d-system-visualization",
+    slug: "3-d-system-visualization",
     title: "3D System Visualization",
     tagline: "An interactive 3D interface for exploring how system components connect and interact.",
     category: ["visualization"],
@@ -123,7 +121,7 @@ export const projects: Project[] = [
     role: "Developer",
     teamSize: "Individual",
     environment: "Windows",
-    year: "2024",
+    year: "2026",
     overview:
       "A browser-based 3D interface for exploring system components and the relationships between them, built to make component interactions easier to reason about than static diagrams or documentation allow.",
     problem:
@@ -160,9 +158,113 @@ export const projects: Project[] = [
       "Feed the visualization from a real, live data source instead of static/mock component data",
       "Add touch controls for a usable mobile experience",
     ],
-    githubUrl: null,
-    demoUrl: null,
-    coverImage: null,
+    githubUrl: "https://github.com/Syed837/3-d-system-visualization",
+    demoUrl: "https://github.com/Syed837/3-d-system-visualization",
+    coverImage: "/projects/system-3d-viz.png",
+    featured: true,
+  },
+  {
+    slug: "adcn-project",
+    title: "Adaptive Disaster Communication Network (ADCN)",
+    tagline:
+      "A resilient communication backbone dynamically switching between networks using MAB algorithms.",
+    category: ["networking", "go"],
+    duration: "45 days",
+    role: "Developer",
+    teamSize: "Individual",
+    environment: "Windows",
+    year: "2026",
+    overview:
+      "A prototype for an Adaptive Disaster Communication Network designed to maintain reliable communication during infrastructure failures by dynamically switching between available communication networks (Wi-Fi, Bluetooth, cellular) using a Federated Hybrid architecture.",
+    problem:
+      "During disasters, traditional communication channels often fail. Relying on a single network or centralized coordination points leads to catastrophic communication breakdowns when those specific infrastructure pieces are damaged.",
+    motivation:
+      "I wanted to build a resilient, decentralized communication tool that could automatically find the best path for messages when standard networks are unreliable.",
+    architecture:
+      "A Federated Hybrid Model implemented in Go. It combines local peer-to-peer communication with elected 'Community Leaders' for coordination. A Multi-Armed Bandit (MAB) algorithm dynamically selects the best-performing network path from available options.",
+    features: [
+      "Dynamic Network Adaptation using Multi-Armed Bandit algorithms",
+      "Store-and-Forward Reliability with end-to-end acknowledgments",
+      "End-to-End Encryption & Digital Signatures for security",
+      "Federated Hybrid P2P Architecture with automatic leader election",
+    ],
+    technicalDecisions: [
+      "Used Go for its concurrency model (goroutines), which is ideal for managing multiple network interfaces and running the MAB algorithm asynchronously",
+      "Implemented as a single, statically-linked binary for simple deployment to diverse, low-power hardware in disaster zones",
+    ],
+    challenges: [
+      "Implementing seamless network switching without dropping critical messages",
+      "Balancing the need for decentralized resilience with the efficiency of coordinated routing",
+    ],
+    solutions: [
+      "Treated available network paths as 'arms' in a Multi-Armed Bandit problem, dynamically learning their real-time performance to optimize routing",
+      "Designed a graceful degradation path from community-leader coordination down to pure P2P operation",
+    ],
+    lessonsLearned: [
+      "Concurrency is critical for resilient networking, and Go makes managing complex asynchronous network operations significantly easier",
+      "True resilience requires assuming every single part of the network can and will fail",
+    ],
+    techStack: ["Go", "HTML5", "CSS3", "JavaScript"],
+    futureImprovements: [
+      "Integrate actual hardware interfaces for Bluetooth and LoRa",
+      "Refine MAB reward functions based on more granular real-time performance metrics",
+    ],
+    githubUrl: "https://github.com/Syed837/adcn-project",
+    demoUrl: "https://github.com/Syed837/adcn-project",
+    coverImage: "/projects/adcn-project.png",
+    featured: true,
+  },
+  {
+    slug: "network-configuration-manager",
+    title: "Automated Network Configuration Manager",
+    tagline:
+      "A production-grade network automation system with configuration diffing and automatic rollback.",
+    category: ["networking", "automation", "python"],
+    duration: "30 days",
+    role: "Developer",
+    teamSize: "Individual",
+    environment: "Windows",
+    year: "2026",
+    overview:
+      "A sophisticated Python-based network automation system for managing Cisco and other network devices. It features configuration diffing, dry-run validation, transaction-like multi-device behavior, and comprehensive automatic rollback.",
+    problem:
+      "Manual network configuration is error-prone and risky. Applying changes to multiple devices without pre-validation or automated rollback mechanisms often leads to network outages and tedious recovery processes.",
+    motivation:
+      "I needed a tool that brought software engineering practices (like dry-runs, visual diffs, and atomic transactions) to network infrastructure management.",
+    architecture:
+      "Built using a layered architecture: a Core Engine orchestrates operations, a Device Abstraction Layer handles multi-vendor SSH connections (via Netmiko/Napalm), an Enhanced Validation Pipeline ensures safety checks, and an Advanced Deployment Engine executes the changes.",
+    features: [
+      "Configuration Diffing (running vs. candidate configs)",
+      "Dry-Run Mode for previewing changes without applying them",
+      "Interface-Aware Validation to protect critical ports from accidental shutdown",
+      "Transaction-Like Behavior with Automatic Rollback across multiple devices",
+    ],
+    technicalDecisions: [
+      "Used a plugin pattern for device abstractions to easily support new vendors",
+      "Implemented a per-device state machine to track deployment status accurately across the fleet",
+      "Built fail-fast validation that stops deployment if safety checks fail before touching the device",
+    ],
+    challenges: [
+      "Handling inconsistent SSH outputs and error messages from different network devices",
+      "Designing a reliable rollback mechanism that works even if the device connection drops mid-deployment",
+    ],
+    solutions: [
+      "Wrapped all device interactions in strict error handling and state tracking",
+      "Implemented a 'transaction' model where any failure triggers a rollback on all previously successful devices in the batch",
+    ],
+    lessonsLearned: [
+      "Network automation requires extremely defensive programming; you have to plan for the device to fail at the worst possible moment",
+      "Pre-deployment validation is just as important as the deployment code itself",
+    ],
+    techStack: ["Python", "Netmiko", "Napalm", "Typer", "Rich"],
+    futureImprovements: [
+      "Add support for Juniper and Arista devices",
+      "Integrate with a Git repository as the single source of truth for candidate configurations",
+      "Build a web dashboard for execution summaries and auditing",
+    ],
+    githubUrl: "https://github.com/Syed837/network-configuration-manager",
+    demoUrl: "https://github.com/Syed837/network-configuration-manager",
+    coverImage: "/projects/network-config-manager.png",
     featured: true,
   },
 ];
